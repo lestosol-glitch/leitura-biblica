@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ffffff">
+<title>Leitura Bíblica · Leandro</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --green: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-dark: #085041;
+    --blue: #378ADD;
+    --red: #E24B4A;
+    --bg: #F7F6F2;
+    --bg2: #EFEDE8;
+    --border: #DDD9D0;
+    --text: #1A1A18;
+    --text2: #7A7568;
+    --white: #FFFFFF;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  /* TOP NAV */
+  .top-nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    padding-top: env(safe-area-inset-top);
+  }
+  .nav-tabs { display: flex; }
+  .nav-tab {
+    flex: 1; padding: 11px 4px 10px;
+    text-align: center; cursor: pointer;
+    font-size: 11px; font-weight: 500;
+    color: var(--text2);
+    border: none; background: none;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 3px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    letter-spacing: 0.01em;
+  }
+  .nav-tab.active { color: var(--green); border-bottom-color: var(--green); }
+  .nav-tab svg { width: 19px; height: 19px; }
+  .badge {
+    background: var(--red); color: #fff;
+    font-size: 9px; font-weight: 600;
+    border-radius: 8px; padding: 1px 5px;
+    margin-left: 2px; line-height: 1.4;
+  }
+
+  /* CONTENT */
+  .content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── HOME ── */
+  .home-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.1rem 0.85rem;
+  }
+  .home-title {
+    font-family: 'Lora', serif;
+    font-size: 18px; font-weight: 600;
+    color: var(--text);
+  }
+  .home-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+  .prog-section { padding: 0.85rem 1.1rem 0; background: var(--white); border-bottom: 1px solid var(--border); }
+  .prog-track {
+    height: 9px; background: var(--bg2);
+    border-radius: 5px; overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%; background: var(--blue);
+    border-radius: 5px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  }
+  .prog-info {
+    font-size: 11px; color: var(--text2);
+    margin-top: 5px; margin-bottom: 0.85rem;
+    display: flex; justify-content: space-between;
+  }
+
+  .stats-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 10px; padding: 0.85rem 1.1rem;
+  }
+  .stat {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem 0.9rem;
+  }
+  .stat-num {
+    font-family: 'Lora', serif;
+    font-size: 26px; font-weight: 600;
+    color: var(--text); line-height: 1;
+  }
+  .stat-label { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+  .today-card {
+    margin: 0 1.1rem 1.1rem;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .today-card-head {
+    background: var(--green-light);
+    padding: 0.65rem 1rem;
+    display: flex; align-items: center; gap: 7px;
+    border-bottom: 1px solid #C5E9DA;
+  }
+  .today-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%; background: var(--green);
+    flex-shrink: 0;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100%{opacity:1} 50%{opacity:0.5}
+  }
+  .today-head-label {
+    font-size: 12px; font-weight: 600;
+    color: var(--green-dark); letter-spacing: 0.02em;
+  }
+  .today-card-body { padding: 1rem 1rem 1.1rem; }
+  .today-date-txt { font-size: 12px; color: var(--text2); margin-bottom: 5px; }
+  .today-pass-txt {
+    font-family: 'Lora', serif;
+    font-size: 24px; font-weight: 600;
+    color: var(--text); line-height: 1.25;
+    margin-bottom: 1.1rem;
+  }
+  .today-btn {
+    width: 100%; padding: 11px;
+    border-radius: var(--radius-sm);
+    border: none; font-size: 14px;
+    font-weight: 600; cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s;
+    letter-spacing: 0.01em;
+  }
+  .today-btn.unread { background: var(--green); color: #fff; }
+  .today-btn.unread:active { background: #178060; transform: scale(0.98); }
+  .today-btn.read {
+    background: var(--bg2); color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .today-btn.read:active { transform: scale(0.98); }
+
+  /* no-today message */
+  .no-today {
+    margin: 0 1.1rem 1.1rem;
+    padding: 1.5rem 1rem;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-align: center;
+    color: var(--text2);
+    font-size: 14px;
+  }
+
+  /* ── LIST ── */
+  .month-nav {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 2;
+  }
+  .mnav-btn {
+    background: none; border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 5px 15px; font-size: 15px;
+    color: var(--text); cursor: pointer;
+    transition: background 0.1s;
+  }
+  .mnav-btn:active { background: var(--bg2); }
+  .month-title {
+    font-family: 'Lora', serif;
+    font-size: 15px; font-weight: 600; color: var(--text);
+  }
+
+  .day-item {
+    display: flex; align-items: center;
+    gap: 12px; padding: 0.7rem 1.1rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer; background: var(--white);
+    transition: background 0.1s;
+  }
+  .day-item:active { background: var(--bg2); }
+  .day-item.is-today { background: var(--green-light); }
+
+  .check {
+    width: 27px; height: 27px; border-radius: 50%;
+    border: 1.5px solid var(--border);
+    flex-shrink: 0; display: flex;
+    align-items: center; justify-content: center;
+    transition: all 0.2s;
+    background: var(--white);
+  }
+  .check.done { background: var(--green); border-color: var(--green); }
+  .check.done::after {
+    content: '';
+    display: block; width: 10px; height: 6px;
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    transform: rotate(-45deg) translateY(-1px);
+  }
+  .day-info { flex: 1; min-width: 0; }
+  .day-date-lbl { font-size: 11px; color: var(--text2); }
+  .day-pass {
+    font-size: 14px; font-weight: 500;
+    color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .today-pill {
+    font-size: 10px; font-weight: 600;
+    background: var(--green); color: #fff;
+    padding: 2px 8px; border-radius: 10px; flex-shrink: 0;
+  }
+  .miss-pill {
+    font-size: 10px; font-weight: 500;
+    color: var(--red); flex-shrink: 0;
+  }
+
+  /* ── PENDING ── */
+  .pend-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.1rem 0.85rem;
+  }
+  .pend-title {
+    font-family: 'Lora', serif;
+    font-size: 18px; font-weight: 600; color: var(--text);
+  }
+  .pend-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+  .section-lbl {
+    padding: 0.55rem 1.1rem;
+    font-size: 11px; font-weight: 600;
+    color: var(--text2); letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+  }
+  .empty-state {
+    padding: 3.5rem 2rem;
+    text-align: center;
+    color: var(--text2);
+    font-size: 14px; line-height: 1.7;
+  }
+  .empty-icon { font-size: 36px; margin-bottom: 0.75rem; }
+</style>
+</head>
+<body>
+
+<div class="top-nav">
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tab-home" onclick="switchTab('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      Início
+    </button>
+    <button class="nav-tab" id="tab-list" onclick="switchTab('list')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.3" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1.3" fill="currentColor" stroke="none"/></svg>
+      Plano
+    </button>
+    <button class="nav-tab" id="tab-pending" onclick="switchTab('pending')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      Pendentes<span class="badge" id="pend-badge" style="display:none">0</span>
+    </button>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- HOME -->
+  <div id="screen-home" class="screen active">
+    <div class="home-header">
+      <div class="home-title">Leitura Bíblica 2026</div>
+      <div class="home-sub">Leandro · Plano anual</div>
+    </div>
+    <div class="prog-section">
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      <div class="prog-info">
+        <span id="prog-done-lbl">0 lidas</span>
+        <span id="prog-pct">0%</span>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num" id="s-lidas">0</div>
+        <div class="stat-label">Lidas</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="s-streak">0</div>
+        <div class="stat-label">Dias seguidos</div>
+      </div>
+    </div>
+    <div id="today-area"></div>
+  </div>
+
+  <!-- PLANO -->
+  <div id="screen-list" class="screen">
+    <div class="month-nav">
+      <button class="mnav-btn" id="btn-prev">‹</button>
+      <span class="month-title" id="month-lbl"></span>
+      <button class="mnav-btn" id="btn-next">›</button>
+    </div>
+    <div id="day-list"></div>
+  </div>
+
+  <!-- PENDENTES -->
+  <div id="screen-pending" class="screen">
+    <div class="pend-header">
+      <div class="pend-title">Leituras pendentes</div>
+      <div class="pend-sub" id="pend-sub">Toque para marcar como lida</div>
+    </div>
+    <div id="pend-list"></div>
+  </div>
+
+</div>
+
+<script>
+const plan = [
+{"d":"2026-01-01","p":"Génesis 1-2"},{"d":"2026-01-02","p":"Génesis 3-5"},{"d":"2026-01-03","p":"Génesis 6-9"},{"d":"2026-01-04","p":"Génesis 10-11"},{"d":"2026-01-05","p":"Génesis 12-15"},{"d":"2026-01-06","p":"Génesis 16-19"},{"d":"2026-01-07","p":"Génesis 20-22"},{"d":"2026-01-08","p":"Génesis 23-26"},{"d":"2026-01-09","p":"Génesis 27-29"},{"d":"2026-01-10","p":"Génesis 30-32"},{"d":"2026-01-11","p":"Génesis 33-36"},{"d":"2026-01-12","p":"Génesis 37-39"},{"d":"2026-01-13","p":"Génesis 40-42"},{"d":"2026-01-14","p":"Génesis 43-46"},{"d":"2026-01-15","p":"Génesis 47-50"},{"d":"2026-01-16","p":"Job 1-4"},{"d":"2026-01-17","p":"Job 5-7"},{"d":"2026-01-18","p":"Job 8-10"},{"d":"2026-01-19","p":"Job 11-13"},{"d":"2026-01-20","p":"Job 14-17"},{"d":"2026-01-21","p":"Job 18-20"},{"d":"2026-01-22","p":"Job 21-24"},{"d":"2026-01-23","p":"Job 25-27"},{"d":"2026-01-24","p":"Job 28-31"},{"d":"2026-01-25","p":"Job 32-34"},{"d":"2026-01-26","p":"Job 35-37"},{"d":"2026-01-27","p":"Job 38-42"},{"d":"2026-01-28","p":"Éxo 1-4"},{"d":"2026-01-29","p":"Éxo 5-7"},{"d":"2026-01-30","p":"Éxo 8-10"},{"d":"2026-01-31","p":"Éxo 11-13"},
+{"d":"2026-02-01","p":"Éxo 14-17"},{"d":"2026-02-02","p":"Éxo 18-20"},{"d":"2026-02-03","p":"Éxo 21-24"},{"d":"2026-02-04","p":"Éxo 25-27"},{"d":"2026-02-05","p":"Éxo 28-31"},{"d":"2026-02-06","p":"Éxo 32-34"},{"d":"2026-02-07","p":"Éxo 35-37"},{"d":"2026-02-08","p":"Éxo 38-40"},{"d":"2026-02-09","p":"Lev 1-4"},{"d":"2026-02-10","p":"Lev 5-7"},{"d":"2026-02-11","p":"Lev 8-10"},{"d":"2026-02-12","p":"Lev 11-13"},{"d":"2026-02-13","p":"Lev 14-16"},{"d":"2026-02-14","p":"Lev 17-19"},{"d":"2026-02-15","p":"Lev 20-23"},{"d":"2026-02-16","p":"Lev 24-27"},{"d":"2026-02-17","p":"Núm 1-3"},{"d":"2026-02-18","p":"Núm 4-6"},{"d":"2026-02-19","p":"Núm 7-10"},{"d":"2026-02-20","p":"Núm 11-14"},{"d":"2026-02-21","p":"Núm 15-17"},{"d":"2026-02-22","p":"Núm 18-20"},{"d":"2026-02-23","p":"Núm 21-24"},{"d":"2026-02-24","p":"Núm 25-27"},{"d":"2026-02-25","p":"Núm 28-30"},{"d":"2026-02-26","p":"Núm 31-33"},{"d":"2026-02-27","p":"Núm 34-36"},{"d":"2026-02-28","p":"Deut 1-3"},
+{"d":"2026-03-01","p":"Deut 4-6"},{"d":"2026-03-02","p":"Deut 7-9"},{"d":"2026-03-03","p":"Deut 10-12"},{"d":"2026-03-04","p":"Deut 13-16"},{"d":"2026-03-05","p":"Deut 17-19"},{"d":"2026-03-06","p":"Deut 20-22"},{"d":"2026-03-07","p":"Deut 23-25"},{"d":"2026-03-08","p":"Deut 26-28"},{"d":"2026-03-09","p":"Deut 29-31"},{"d":"2026-03-10","p":"Deut 32-34"},{"d":"2026-03-11","p":"Jos 1-3"},{"d":"2026-03-12","p":"Jos 4-6"},{"d":"2026-03-13","p":"Jos 7-9"},{"d":"2026-03-14","p":"Jos 10-12"},{"d":"2026-03-15","p":"Jos 13-15"},{"d":"2026-03-16","p":"Jos 16-18"},{"d":"2026-03-17","p":"Jos 19-21"},{"d":"2026-03-18","p":"Jos 22-24"},{"d":"2026-03-19","p":"Jue 1-4"},{"d":"2026-03-20","p":"Jue 5-8"},{"d":"2026-03-21","p":"Jue 9-12"},{"d":"2026-03-22","p":"Jue 13-15"},{"d":"2026-03-23","p":"Jue 16-18"},{"d":"2026-03-24","p":"Jue 19-21"},{"d":"2026-03-25","p":"Rut 1-4"},{"d":"2026-03-26","p":"1 Sam 1-3"},{"d":"2026-03-27","p":"1 Sam 4-7"},{"d":"2026-03-28","p":"1 Sam 8-10"},{"d":"2026-03-29","p":"1 Sam 11-13"},{"d":"2026-03-30","p":"1 Sam 14-16"},{"d":"2026-03-31","p":"1 Sam 17-20"},
+{"d":"2026-04-01","p":"1 Sam 21-24"},{"d":"2026-04-02","p":"1 Sam 25-28"},{"d":"2026-04-03","p":"1 Sam 29-31"},{"d":"2026-04-04","p":"2 Sam 1-4"},{"d":"2026-04-05","p":"2 Sam 5-8"},{"d":"2026-04-06","p":"2 Sam 9-12"},{"d":"2026-04-07","p":"2 Sam 13-15"},{"d":"2026-04-08","p":"2 Sam 16-18"},{"d":"2026-04-09","p":"2 Sam 19-21"},{"d":"2026-04-10","p":"2 Sam 22-24"},{"d":"2026-04-11","p":"Sal 1-3"},{"d":"2026-04-12","p":"Sal 4-6"},{"d":"2026-04-13","p":"Sal 7-9"},{"d":"2026-04-14","p":"Sal 10-12"},{"d":"2026-04-15","p":"Sal 13-15"},{"d":"2026-04-16","p":"Sal 16-18"},{"d":"2026-04-17","p":"Sal 19-21"},{"d":"2026-04-18","p":"Sal 22-24"},{"d":"2026-04-19","p":"Sal 25-27"},{"d":"2026-04-20","p":"Sal 28-30"},{"d":"2026-04-21","p":"Sal 31-33"},{"d":"2026-04-22","p":"Sal 34-36"},{"d":"2026-04-23","p":"Sal 37-39"},{"d":"2026-04-24","p":"Sal 40-42"},{"d":"2026-04-25","p":"Sal 43-45"},{"d":"2026-04-26","p":"Sal 46-48"},{"d":"2026-04-27","p":"Sal 49-51"},{"d":"2026-04-28","p":"Sal 52-54"},{"d":"2026-04-29","p":"Sal 55-57"},{"d":"2026-04-30","p":"Sal 58-60"},
+{"d":"2026-05-01","p":"Sal 61-63"},{"d":"2026-05-02","p":"Sal 64-66"},{"d":"2026-05-03","p":"Sal 67-69"},{"d":"2026-05-04","p":"Sal 70-72"},{"d":"2026-05-05","p":"Sal 73-75"},{"d":"2026-05-06","p":"Sal 76-78"},{"d":"2026-05-07","p":"Sal 79-81"},{"d":"2026-05-08","p":"Sal 82-84"},{"d":"2026-05-09","p":"Sal 85-87"},{"d":"2026-05-10","p":"Sal 88-90"},{"d":"2026-05-11","p":"Sal 91-93"},{"d":"2026-05-12","p":"Sal 94-96"},{"d":"2026-05-13","p":"Sal 97-99"},{"d":"2026-05-14","p":"Sal 100-102"},{"d":"2026-05-15","p":"Sal 103-105"},{"d":"2026-05-16","p":"Sal 106-108"},{"d":"2026-05-17","p":"Sal 109-111"},{"d":"2026-05-18","p":"Sal 112-114"},{"d":"2026-05-19","p":"Sal 115-118"},{"d":"2026-05-20","p":"Sal 119"},{"d":"2026-05-21","p":"Sal 120-123"},{"d":"2026-05-22","p":"Sal 124-126"},{"d":"2026-05-23","p":"Sal 127-129"},{"d":"2026-05-24","p":"Sal 130-132"},{"d":"2026-05-25","p":"Sal 133-135"},{"d":"2026-05-26","p":"Sal 136-138"},{"d":"2026-05-27","p":"Sal 139-141"},{"d":"2026-05-28","p":"Sal 142-144"},{"d":"2026-05-29","p":"Sal 145-147"},{"d":"2026-05-30","p":"Sal 148-150"},{"d":"2026-05-31","p":"1 Rey 1-4"},
+{"d":"2026-06-01","p":"Prov 1-3"},{"d":"2026-06-02","p":"Prov 4-7"},{"d":"2026-06-03","p":"Prov 8-11"},{"d":"2026-06-04","p":"Prov 12-14"},{"d":"2026-06-05","p":"Prov 15-18"},{"d":"2026-06-06","p":"Prov 19-21"},{"d":"2026-06-07","p":"Prov 22-24"},{"d":"2026-06-08","p":"Prov 25-28"},{"d":"2026-06-09","p":"Prov 29-31"},{"d":"2026-06-10","p":"Ecl 1-3"},{"d":"2026-06-11","p":"Ecl 4-6"},{"d":"2026-06-12","p":"Ecl 7-9"},{"d":"2026-06-13","p":"Ecl 10-12"},{"d":"2026-06-14","p":"Cant 1-4"},{"d":"2026-06-15","p":"Cant 5-8"},{"d":"2026-06-16","p":"1 Rey 5-7"},{"d":"2026-06-17","p":"1 Rey 8-10"},{"d":"2026-06-18","p":"1 Rey 11-13"},{"d":"2026-06-19","p":"1 Rey 14-16"},{"d":"2026-06-20","p":"1 Rey 17-19"},{"d":"2026-06-21","p":"1 Rey 20-22"},{"d":"2026-06-22","p":"2 Rey 1-3"},{"d":"2026-06-23","p":"2 Rey 4-6"},{"d":"2026-06-24","p":"2 Rey 7-10"},{"d":"2026-06-25","p":"2 Rey 11-14:20 + Joel 1-3"},{"d":"2026-06-26","p":"2 Rey 14:21-25 + Jon 1-4"},{"d":"2026-06-27","p":"2 Rey 14:26-29"},{"d":"2026-06-28","p":"Am 1-3"},{"d":"2026-06-29","p":"Am 4-6"},{"d":"2026-06-30","p":"Am 7-9"},
+{"d":"2026-07-01","p":"2 Rey 15-17"},{"d":"2026-07-02","p":"Ose 1-4"},{"d":"2026-07-03","p":"Ose 5-7"},{"d":"2026-07-04","p":"Ose 8-10"},{"d":"2026-07-05","p":"Ose 11-14"},{"d":"2026-07-06","p":"2 Rey 18-19"},{"d":"2026-07-07","p":"Isa 1-3"},{"d":"2026-07-08","p":"Isa 4-6"},{"d":"2026-07-09","p":"Isa 7-9"},{"d":"2026-07-10","p":"Isa 10-12"},{"d":"2026-07-11","p":"Isa 13-15"},{"d":"2026-07-12","p":"Isa 16-18"},{"d":"2026-07-13","p":"Isa 19-21"},{"d":"2026-07-14","p":"Isa 22-24"},{"d":"2026-07-15","p":"Isa 25-27"},{"d":"2026-07-16","p":"Isa 28-30"},{"d":"2026-07-17","p":"Isa 31-33"},{"d":"2026-07-18","p":"Isa 34-36"},{"d":"2026-07-19","p":"Isa 37-39"},{"d":"2026-07-20","p":"Isa 40-42"},{"d":"2026-07-21","p":"Isa 43-45"},{"d":"2026-07-22","p":"Isa 46-48"},{"d":"2026-07-23","p":"Isa 49-51"},{"d":"2026-07-24","p":"Isa 52-54"},{"d":"2026-07-25","p":"Isa 55-57"},{"d":"2026-07-26","p":"Isa 58-60"},{"d":"2026-07-27","p":"Isa 61-63"},{"d":"2026-07-28","p":"Isa 64-66"},{"d":"2026-07-29","p":"Miq 1-4"},{"d":"2026-07-30","p":"Miq 5-7"},{"d":"2026-07-31","p":"Nau 1-3"},
+{"d":"2026-08-01","p":"2 Rey 20-21"},{"d":"2026-08-02","p":"Sof 1-3"},{"d":"2026-08-03","p":"Hab 1-3"},{"d":"2026-08-04","p":"2 Rey 22-25"},{"d":"2026-08-05","p":"Oba - Jer 1-2"},{"d":"2026-08-06","p":"Jer 3-5"},{"d":"2026-08-07","p":"Jer 6-8"},{"d":"2026-08-08","p":"Jer 9-12"},{"d":"2026-08-09","p":"Jer 13-16"},{"d":"2026-08-10","p":"Jer 17-20"},{"d":"2026-08-11","p":"Jer 21-23"},{"d":"2026-08-12","p":"Jer 24-26"},{"d":"2026-08-13","p":"Jer 27-29"},{"d":"2026-08-14","p":"Jer 30-32"},{"d":"2026-08-15","p":"Jer 33-36"},{"d":"2026-08-16","p":"Jer 37-39"},{"d":"2026-08-17","p":"Jer 40-42"},{"d":"2026-08-18","p":"Jer 43-46"},{"d":"2026-08-19","p":"Jer 47-49"},{"d":"2026-08-20","p":"Jer 50-52"},{"d":"2026-08-21","p":"Lam 1-5"},{"d":"2026-08-22","p":"1 Cró 1-3"},{"d":"2026-08-23","p":"1 Cró 4-6"},{"d":"2026-08-24","p":"1 Cró 7-9"},{"d":"2026-08-25","p":"1 Cró 10-13"},{"d":"2026-08-26","p":"1 Cró 14-16"},{"d":"2026-08-27","p":"1 Cró 17-19"},{"d":"2026-08-28","p":"1 Cró 20-23"},{"d":"2026-08-29","p":"1 Cró 24-26"},{"d":"2026-08-30","p":"1 Cró 27-29"},{"d":"2026-08-31","p":"2 Cró 1-3"},
+{"d":"2026-09-01","p":"2 Cró 4-6"},{"d":"2026-09-02","p":"2 Cró 7-9"},{"d":"2026-09-03","p":"2 Cró 10-13"},{"d":"2026-09-04","p":"2 Cró 14-16"},{"d":"2026-09-05","p":"2 Cró 17-19"},{"d":"2026-09-06","p":"2 Cró 20-22"},{"d":"2026-09-07","p":"2 Cró 23-25"},{"d":"2026-09-08","p":"2 Cró 26-29"},{"d":"2026-09-09","p":"2 Cró 30-32"},{"d":"2026-09-10","p":"2 Cró 33-36"},{"d":"2026-09-11","p":"Eze 1-3"},{"d":"2026-09-12","p":"Eze 4-7"},{"d":"2026-09-13","p":"Eze 8-11"},{"d":"2026-09-14","p":"Eze 12-14"},{"d":"2026-09-15","p":"Eze 15-18"},{"d":"2026-09-16","p":"Eze 19-21"},{"d":"2026-09-17","p":"Eze 22-24"},{"d":"2026-09-18","p":"Eze 25-27"},{"d":"2026-09-19","p":"Eze 28-30"},{"d":"2026-09-20","p":"Eze 31-33"},{"d":"2026-09-21","p":"Eze 34-36"},{"d":"2026-09-22","p":"Eze 37-39"},{"d":"2026-09-23","p":"Eze 40-42"},{"d":"2026-09-24","p":"Eze 43-45"},{"d":"2026-09-25","p":"Eze 46-48"},{"d":"2026-09-26","p":"Dan 1-3"},{"d":"2026-09-27","p":"Dan 4-6"},{"d":"2026-09-28","p":"Dan 7-9"},{"d":"2026-09-29","p":"Dan 10-12"},{"d":"2026-09-30","p":"Est 1-3"},
+{"d":"2026-10-01","p":"Est 4-7"},{"d":"2026-10-02","p":"Est 8-10"},{"d":"2026-10-03","p":"Esd 1-4"},{"d":"2026-10-04","p":"Ag - Zac 1-2"},{"d":"2026-10-05","p":"Zac 3-6"},{"d":"2026-10-06","p":"Zac 7-10"},{"d":"2026-10-07","p":"Zac 11-14"},{"d":"2026-10-08","p":"Esd 5-7"},{"d":"2026-10-09","p":"Esd 8-10"},{"d":"2026-10-10","p":"Neh 1-3"},{"d":"2026-10-11","p":"Neh 4-6"},{"d":"2026-10-12","p":"Neh 7-9"},{"d":"2026-10-13","p":"Neh 10-13"},{"d":"2026-10-14","p":"Mal 1-4"},{"d":"2026-10-15","p":"Mat 1-4"},{"d":"2026-10-16","p":"Mat 5-7"},{"d":"2026-10-17","p":"Mat 8-11"},{"d":"2026-10-18","p":"Mat 12-15"},{"d":"2026-10-19","p":"Mat 16-19"},{"d":"2026-10-20","p":"Mat 20-22"},{"d":"2026-10-21","p":"Mat 23-25"},{"d":"2026-10-22","p":"Mat 26-28"},{"d":"2026-10-23","p":"Mar 1-3"},{"d":"2026-10-24","p":"Mar 4-6"},{"d":"2026-10-25","p":"Mar 7-10"},{"d":"2026-10-26","p":"Mar 11-13"},{"d":"2026-10-27","p":"Mar 14-16"},{"d":"2026-10-28","p":"Luc 1-3"},{"d":"2026-10-29","p":"Luc 4-6"},{"d":"2026-10-30","p":"Luc 7-9"},{"d":"2026-10-31","p":"Luc 10-13"},
+{"d":"2026-11-01","p":"Luc 14-17"},{"d":"2026-11-02","p":"Luc 18-21"},{"d":"2026-11-03","p":"Luc 22-24"},{"d":"2026-11-04","p":"Jue 1-3"},{"d":"2026-11-05","p":"Jue 4-6"},{"d":"2026-11-06","p":"Jue 7-10"},{"d":"2026-11-07","p":"Jue 11-13"},{"d":"2026-11-08","p":"Jue 14-17"},{"d":"2026-11-09","p":"Jue 18-21"},{"d":"2026-11-10","p":"Hech 1-2"},{"d":"2026-11-11","p":"Hech 3-5"},{"d":"2026-11-12","p":"Hech 6-9"},{"d":"2026-11-13","p":"Hech 10-12"},{"d":"2026-11-14","p":"Hech 13-14"},{"d":"2026-11-15","p":"Sant 1-2"},{"d":"2026-11-16","p":"Sant 3-5"},{"d":"2026-11-17","p":"Gál 1-3"},{"d":"2026-11-18","p":"Gál 4-6"},{"d":"2026-11-19","p":"Hech 15-18:11"},{"d":"2026-11-20","p":"1 Tes 1-5"},{"d":"2026-11-21","p":"2 Tes 1-3"},{"d":"2026-11-22","p":"Hech 18:12-19:10"},{"d":"2026-11-23","p":"1 Cor 1-4"},{"d":"2026-11-24","p":"1 Cor 5-8"},{"d":"2026-11-25","p":"1 Cor 9-12"},{"d":"2026-11-26","p":"1 Cor 13-16"},{"d":"2026-11-27","p":"Hech 19:11-20:1"},{"d":"2026-11-28","p":"2 Cor 1-3"},{"d":"2026-11-29","p":"2 Cor 4-6"},{"d":"2026-11-30","p":"2 Cor 7-9"},
+{"d":"2026-12-01","p":"2 Cor 10-13"},{"d":"2026-12-02","p":"Hech 20:2"},{"d":"2026-12-03","p":"Rom 1-4"},{"d":"2026-12-04","p":"Rom 5-8"},{"d":"2026-12-05","p":"Rom 9-11"},{"d":"2026-12-06","p":"Rom 12-16"},{"d":"2026-12-07","p":"Hech 20:3-22:30"},{"d":"2026-12-08","p":"Hech 23-25"},{"d":"2026-12-09","p":"Hech 26-28"},{"d":"2026-12-10","p":"Efe 1-3"},{"d":"2026-12-11","p":"Efe 4-6"},{"d":"2026-12-12","p":"Fil 1-4"},{"d":"2026-12-13","p":"Col 1-4"},{"d":"2026-12-14","p":"Hebr 1-4"},{"d":"2026-12-15","p":"Hebr 5-7"},{"d":"2026-12-16","p":"Hebr 8-10"},{"d":"2026-12-17","p":"Hebr 11-13"},{"d":"2026-12-18","p":"Filemon + 1 Ped 1-2"},{"d":"2026-12-19","p":"1 Ped 3-5"},{"d":"2026-12-20","p":"2 Ped 1-3"},{"d":"2026-12-21","p":"1 Tim 1-3"},{"d":"2026-12-22","p":"1 Tim 4-6"},{"d":"2026-12-23","p":"Tit 1-3"},{"d":"2026-12-24","p":"2 Tim 1-4"},{"d":"2026-12-25","p":"1 Jo 1-2"},{"d":"2026-12-26","p":"1 Jo 3-5"},{"d":"2026-12-27","p":"2 Jo + 3 Jo + Judas"},{"d":"2026-12-28","p":"Apoc 1-3"},{"d":"2026-12-29","p":"Apoc 4-6"},{"d":"2026-12-30","p":"Apoc 7-9"},{"d":"2026-12-31","p":"Apoc 10-12"},
+{"d":"2027-01-01","p":"Apoc 13-15"},{"d":"2027-01-02","p":"Apoc 16-18"},{"d":"2027-01-03","p":"Apoc 19-22"}
+];
+
+const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DAYS = ['dom.','seg.','ter.','qua.','qui.','sex.','sáb.'];
+const KEY = 'leandro_bible_2026';
+
+let done = {};
+try { done = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e) {}
+
+const todayStr = new Date().toISOString().slice(0,10);
+const todayEntry = plan.find(x => x.d === todayStr);
+let curMonth = new Date().getMonth();
+let curYear = new Date().getFullYear();
+
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(done)); } catch(e) {}
+}
+
+function toggle(dateStr) {
+  if (done[dateStr]) delete done[dateStr]; else done[dateStr] = true;
+  save(); render();
+}
+
+function toggleToday() { if (todayEntry) toggle(todayEntry.d); }
+
+function streak() {
+  let s = 0;
+  let d = new Date(todayStr);
+  while (true) {
+    const ds = d.toISOString().slice(0,10);
+    if (done[ds]) { s++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return s;
+}
+
+function fmtDate(ds) {
+  const d = new Date(ds + 'T00:00:00');
+  return d.getDate() + ' de ' + MONTHS[d.getMonth()];
+}
+
+function render() {
+  const total = plan.length;
+  const cnt = Object.keys(done).length;
+  const pct = Math.round(cnt / total * 100);
+
+  document.getElementById('s-lidas').textContent = cnt;
+  document.getElementById('s-streak').textContent = streak();
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-done-lbl').textContent = cnt + ' lidas';
+  document.getElementById('prog-pct').textContent = pct + '%';
+
+  // Today card
+  const area = document.getElementById('today-area');
+  if (todayEntry) {
+    const d = new Date(todayEntry.d + 'T00:00:00');
+    const isDone = !!done[todayEntry.d];
+    area.innerHTML = `
+      <div class="today-card">
+        <div class="today-card-head">
+          <div class="today-dot"></div>
+          <span class="today-head-label">Leitura de hoje</span>
+        </div>
+        <div class="today-card-body">
+          <div class="today-date-txt">${DAYS[d.getDay()]} · ${fmtDate(todayEntry.d)}</div>
+          <div class="today-pass-txt">${todayEntry.p}</div>
+          <button class="today-btn ${isDone?'read':'unread'}" onclick="toggleToday()">
+            ${isDone ? 'Lida hoje ✓' : 'Marcar como lida'}
+          </button>
+        </div>
+      </div>`;
+  } else {
+    area.innerHTML = '<div class="no-today">Nenhuma leitura programada para hoje.</div>';
+  }
+
+  renderList();
+  renderPending();
+}
+
+function renderList() {
+  document.getElementById('month-lbl').textContent = MONTHS[curMonth] + ' ' + curYear;
+  const items = plan.filter(x => {
+    const d = new Date(x.d + 'T00:00:00');
+    return d.getMonth() === curMonth && d.getFullYear() === curYear;
+  });
+  const el = document.getElementById('day-list');
+  el.innerHTML = '';
+  items.forEach(item => {
+    const d = new Date(item.d + 'T00:00:00');
+    const isToday = item.d === todayStr;
+    const isDone = !!done[item.d];
+    const isPast = item.d < todayStr && !isDone;
+    const row = document.createElement('div');
+    row.className = 'day-item' + (isToday ? ' is-today' : '');
+    row.innerHTML = `
+      <div class="check ${isDone?'done':''}"></div>
+      <div class="day-info">
+        <div class="day-date-lbl">${d.getDate()} · ${DAYS[d.getDay()]}</div>
+        <div class="day-pass">${item.p}</div>
+      </div>
+      ${isToday ? '<span class="today-pill">Hoje</span>' : (isPast ? '<span class="miss-pill">pendente</span>' : '')}
+    `;
+    row.addEventListener('click', () => toggle(item.d));
+    el.appendChild(row);
+  });
+}
+
+function renderPending() {
+  const pending = plan.filter(x => x.d < todayStr && !done[x.d]);
+  const badge = document.getElementById('pend-badge');
+  badge.style.display = pending.length ? 'inline' : 'none';
+  badge.textContent = pending.length;
+  document.getElementById('pend-sub').textContent =
+    pending.length ? pending.length + ' leituras · toque para marcar como lida' : 'Tudo em dia!';
+
+  const el = document.getElementById('pend-list');
+  el.innerHTML = '';
+  if (!pending.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">✓</div>Nenhuma leitura pendente.<br>Você está em dia!</div>';
+    return;
+  }
+  let lastM = '';
+  pending.forEach(item => {
+    const d = new Date(item.d + 'T00:00:00');
+    const mk = MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+    if (mk !== lastM) {
+      lastM = mk;
+      const sec = document.createElement('div');
+      sec.className = 'section-lbl';
+      sec.textContent = mk;
+      el.appendChild(sec);
+    }
+    const row = document.createElement('div');
+    row.className = 'day-item';
+    row.innerHTML = `
+      <div class="check"></div>
+      <div class="day-info">
+        <div class="day-date-lbl">${fmtDate(item.d)} · ${DAYS[d.getDay()]}</div>
+        <div class="day-pass">${item.p}</div>
+      </div>
+    `;
+    row.addEventListener('click', () => toggle(item.d));
+    el.appendChild(row);
+  });
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+document.getElementById('btn-prev').addEventListener('click', () => {
+  curMonth--; if (curMonth < 0) { curMonth = 11; curYear--; } renderList();
+});
+document.getElementById('btn-next').addEventListener('click', () => {
+  curMonth++; if (curMonth > 11) { curMonth = 0; curYear++; } renderList();
+});
+
+render();
+</script>
+</body>
+</html>
