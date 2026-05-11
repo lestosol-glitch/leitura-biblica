@@ -41,7 +41,6 @@
     overflow: hidden;
   }
 
-  /* TOP NAV */
   .top-nav {
     background: var(--white);
     border-bottom: 1px solid var(--border);
@@ -70,12 +69,11 @@
     margin-left: 2px; line-height: 1.4;
   }
 
-  /* CONTENT */
   .content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .screen { display: none; }
   .screen.active { display: block; }
 
-  /* ── HOME ── */
+  /* HOME */
   .home-header {
     background: var(--white);
     border-bottom: 1px solid var(--border);
@@ -83,12 +81,15 @@
   }
   .home-title {
     font-family: 'Lora', serif;
-    font-size: 18px; font-weight: 600;
-    color: var(--text);
+    font-size: 18px; font-weight: 600; color: var(--text);
   }
   .home-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
 
-  .prog-section { padding: 0.85rem 1.1rem 0; background: var(--white); border-bottom: 1px solid var(--border); }
+  .prog-section {
+    padding: 0.85rem 1.1rem;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+  }
   .prog-track {
     height: 9px; background: var(--bg2);
     border-radius: 5px; overflow: hidden;
@@ -100,27 +101,77 @@
   }
   .prog-info {
     font-size: 11px; color: var(--text2);
-    margin-top: 5px; margin-bottom: 0.85rem;
+    margin-top: 5px;
     display: flex; justify-content: space-between;
   }
 
-  .stats-row {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 10px; padding: 0.85rem 1.1rem;
-  }
-  .stat {
+  /* Texto Diário */
+  .daily-card {
+    margin: 0.85rem 1.1rem;
     background: var(--white);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 0.75rem 0.9rem;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   }
-  .stat-num {
+  .daily-card-head {
+    background: #EEF4FB;
+    padding: 0.6rem 1rem;
+    display: flex; align-items: center; gap: 7px;
+    border-bottom: 1px solid #D5E5F5;
+  }
+  .daily-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%; background: var(--blue); flex-shrink: 0;
+  }
+  .daily-head-label {
+    font-size: 12px; font-weight: 600;
+    color: #1a4a7a; letter-spacing: 0.02em;
+    flex: 1;
+  }
+  .daily-link {
+    font-size: 11px; color: var(--blue);
+    text-decoration: none; font-weight: 500;
+  }
+  .daily-body { padding: 0.9rem 1rem 1rem; }
+  .daily-date-lbl { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+  .daily-verse {
     font-family: 'Lora', serif;
-    font-size: 26px; font-weight: 600;
-    color: var(--text); line-height: 1;
+    font-size: 13px; font-style: italic;
+    color: var(--text); margin-bottom: 0.65rem;
+    line-height: 1.5; font-weight: 500;
   }
-  .stat-label { font-size: 11px; color: var(--text2); margin-top: 3px; }
+  .daily-text {
+    font-size: 13px; color: var(--text2);
+    line-height: 1.65;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .daily-text.expanded {
+    display: block;
+    -webkit-line-clamp: unset;
+  }
+  .daily-toggle {
+    margin-top: 0.5rem;
+    font-size: 12px; font-weight: 600;
+    color: var(--blue); cursor: pointer;
+    background: none; border: none;
+    padding: 0; font-family: 'Inter', sans-serif;
+  }
+  .daily-loading {
+    font-size: 13px; color: var(--text2);
+    font-style: italic; text-align: center;
+    padding: 0.5rem 0;
+  }
+  .daily-error {
+    font-size: 12px; color: var(--text2);
+    text-align: center; padding: 0.5rem 0;
+  }
+  .daily-error a { color: var(--blue); }
 
+  /* Today card */
   .today-card {
     margin: 0 1.1rem 1.1rem;
     background: var(--white);
@@ -137,13 +188,10 @@
   }
   .today-dot {
     width: 7px; height: 7px;
-    border-radius: 50%; background: var(--green);
-    flex-shrink: 0;
+    border-radius: 50%; background: var(--green); flex-shrink: 0;
     animation: pulse 2s ease-in-out infinite;
   }
-  @keyframes pulse {
-    0%,100%{opacity:1} 50%{opacity:0.5}
-  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
   .today-head-label {
     font-size: 12px; font-weight: 600;
     color: var(--green-dark); letter-spacing: 0.02em;
@@ -153,39 +201,28 @@
   .today-pass-txt {
     font-family: 'Lora', serif;
     font-size: 24px; font-weight: 600;
-    color: var(--text); line-height: 1.25;
-    margin-bottom: 1.1rem;
+    color: var(--text); line-height: 1.25; margin-bottom: 1.1rem;
   }
   .today-btn {
     width: 100%; padding: 11px;
-    border-radius: var(--radius-sm);
-    border: none; font-size: 14px;
-    font-weight: 600; cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: all 0.15s;
+    border-radius: var(--radius-sm); border: none;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: 'Inter', sans-serif; transition: all 0.15s;
     letter-spacing: 0.01em;
   }
   .today-btn.unread { background: var(--green); color: #fff; }
   .today-btn.unread:active { background: #178060; transform: scale(0.98); }
-  .today-btn.read {
-    background: var(--bg2); color: var(--text2);
-    border: 1px solid var(--border);
-  }
+  .today-btn.read { background: var(--bg2); color: var(--text2); border: 1px solid var(--border); }
   .today-btn.read:active { transform: scale(0.98); }
 
-  /* no-today message */
   .no-today {
-    margin: 0 1.1rem 1.1rem;
-    padding: 1.5rem 1rem;
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    text-align: center;
-    color: var(--text2);
-    font-size: 14px;
+    margin: 0 1.1rem 1.1rem; padding: 1.5rem 1rem;
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius); text-align: center;
+    color: var(--text2); font-size: 14px;
   }
 
-  /* ── LIST ── */
+  /* LIST */
   .month-nav {
     display: flex; align-items: center;
     justify-content: space-between;
@@ -222,22 +259,19 @@
     border: 1.5px solid var(--border);
     flex-shrink: 0; display: flex;
     align-items: center; justify-content: center;
-    transition: all 0.2s;
-    background: var(--white);
+    transition: all 0.2s; background: var(--white);
   }
   .check.done { background: var(--green); border-color: var(--green); }
   .check.done::after {
-    content: '';
-    display: block; width: 10px; height: 6px;
-    border-left: 2px solid white;
-    border-bottom: 2px solid white;
+    content: ''; display: block;
+    width: 10px; height: 6px;
+    border-left: 2px solid white; border-bottom: 2px solid white;
     transform: rotate(-45deg) translateY(-1px);
   }
   .day-info { flex: 1; min-width: 0; }
   .day-date-lbl { font-size: 11px; color: var(--text2); }
   .day-pass {
-    font-size: 14px; font-weight: 500;
-    color: var(--text);
+    font-size: 14px; font-weight: 500; color: var(--text);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .today-pill {
@@ -245,15 +279,11 @@
     background: var(--green); color: #fff;
     padding: 2px 8px; border-radius: 10px; flex-shrink: 0;
   }
-  .miss-pill {
-    font-size: 10px; font-weight: 500;
-    color: var(--red); flex-shrink: 0;
-  }
+  .miss-pill { font-size: 10px; font-weight: 500; color: var(--red); flex-shrink: 0; }
 
-  /* ── PENDING ── */
+  /* PENDING */
   .pend-header {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
+    background: var(--white); border-bottom: 1px solid var(--border);
     padding: 1rem 1.1rem 0.85rem;
   }
   .pend-title {
@@ -261,20 +291,15 @@
     font-size: 18px; font-weight: 600; color: var(--text);
   }
   .pend-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
-
   .section-lbl {
     padding: 0.55rem 1.1rem;
-    font-size: 11px; font-weight: 600;
-    color: var(--text2); letter-spacing: 0.06em;
-    text-transform: uppercase;
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
+    font-size: 11px; font-weight: 600; color: var(--text2);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    background: var(--bg2); border-bottom: 1px solid var(--border);
   }
   .empty-state {
-    padding: 3.5rem 2rem;
-    text-align: center;
-    color: var(--text2);
-    font-size: 14px; line-height: 1.7;
+    padding: 3.5rem 2rem; text-align: center;
+    color: var(--text2); font-size: 14px; line-height: 1.7;
   }
   .empty-icon { font-size: 36px; margin-bottom: 0.75rem; }
 </style>
@@ -302,10 +327,6 @@
 
   <!-- HOME -->
   <div id="screen-home" class="screen active">
-    <div class="home-header">
-      <div class="home-title">Leitura Bíblica 2026</div>
-      <div class="home-sub">Leandro · Plano anual</div>
-    </div>
     <div class="prog-section">
       <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
       <div class="prog-info">
@@ -313,17 +334,21 @@
         <span id="prog-pct">0%</span>
       </div>
     </div>
-    <div class="stats-row">
-      <div class="stat">
-        <div class="stat-num" id="s-lidas">0</div>
-        <div class="stat-label">Lidas</div>
+
+    <!-- Leitura de Hoje -->
+    <div id="today-area"></div>
+
+    <!-- Texto Diário -->
+    <div class="daily-card">
+      <div class="daily-card-head">
+        <div class="daily-dot"></div>
+        <span class="daily-head-label">Texto do Dia</span>
+        <a class="daily-link" href="https://wol.jw.org/pt/wol/h/r5/lp-t" target="_blank">Ver site ↗</a>
       </div>
-      <div class="stat">
-        <div class="stat-num" id="s-streak">0</div>
-        <div class="stat-label">Dias seguidos</div>
+      <div class="daily-body" id="daily-body">
+        <div class="daily-loading">Carregando texto do dia...</div>
       </div>
     </div>
-    <div id="today-area"></div>
   </div>
 
   <!-- PLANO -->
@@ -348,6 +373,7 @@
 </div>
 
 <script>
+// ── PLANO DE LEITURA ──────────────────────────────────────────────
 const plan = [
 {"d":"2026-01-01","p":"Génesis 1-2"},{"d":"2026-01-02","p":"Génesis 3-5"},{"d":"2026-01-03","p":"Génesis 6-9"},{"d":"2026-01-04","p":"Génesis 10-11"},{"d":"2026-01-05","p":"Génesis 12-15"},{"d":"2026-01-06","p":"Génesis 16-19"},{"d":"2026-01-07","p":"Génesis 20-22"},{"d":"2026-01-08","p":"Génesis 23-26"},{"d":"2026-01-09","p":"Génesis 27-29"},{"d":"2026-01-10","p":"Génesis 30-32"},{"d":"2026-01-11","p":"Génesis 33-36"},{"d":"2026-01-12","p":"Génesis 37-39"},{"d":"2026-01-13","p":"Génesis 40-42"},{"d":"2026-01-14","p":"Génesis 43-46"},{"d":"2026-01-15","p":"Génesis 47-50"},{"d":"2026-01-16","p":"Job 1-4"},{"d":"2026-01-17","p":"Job 5-7"},{"d":"2026-01-18","p":"Job 8-10"},{"d":"2026-01-19","p":"Job 11-13"},{"d":"2026-01-20","p":"Job 14-17"},{"d":"2026-01-21","p":"Job 18-20"},{"d":"2026-01-22","p":"Job 21-24"},{"d":"2026-01-23","p":"Job 25-27"},{"d":"2026-01-24","p":"Job 28-31"},{"d":"2026-01-25","p":"Job 32-34"},{"d":"2026-01-26","p":"Job 35-37"},{"d":"2026-01-27","p":"Job 38-42"},{"d":"2026-01-28","p":"Éxo 1-4"},{"d":"2026-01-29","p":"Éxo 5-7"},{"d":"2026-01-30","p":"Éxo 8-10"},{"d":"2026-01-31","p":"Éxo 11-13"},
 {"d":"2026-02-01","p":"Éxo 14-17"},{"d":"2026-02-02","p":"Éxo 18-20"},{"d":"2026-02-03","p":"Éxo 21-24"},{"d":"2026-02-04","p":"Éxo 25-27"},{"d":"2026-02-05","p":"Éxo 28-31"},{"d":"2026-02-06","p":"Éxo 32-34"},{"d":"2026-02-07","p":"Éxo 35-37"},{"d":"2026-02-08","p":"Éxo 38-40"},{"d":"2026-02-09","p":"Lev 1-4"},{"d":"2026-02-10","p":"Lev 5-7"},{"d":"2026-02-11","p":"Lev 8-10"},{"d":"2026-02-12","p":"Lev 11-13"},{"d":"2026-02-13","p":"Lev 14-16"},{"d":"2026-02-14","p":"Lev 17-19"},{"d":"2026-02-15","p":"Lev 20-23"},{"d":"2026-02-16","p":"Lev 24-27"},{"d":"2026-02-17","p":"Núm 1-3"},{"d":"2026-02-18","p":"Núm 4-6"},{"d":"2026-02-19","p":"Núm 7-10"},{"d":"2026-02-20","p":"Núm 11-14"},{"d":"2026-02-21","p":"Núm 15-17"},{"d":"2026-02-22","p":"Núm 18-20"},{"d":"2026-02-23","p":"Núm 21-24"},{"d":"2026-02-24","p":"Núm 25-27"},{"d":"2026-02-25","p":"Núm 28-30"},{"d":"2026-02-26","p":"Núm 31-33"},{"d":"2026-02-27","p":"Núm 34-36"},{"d":"2026-02-28","p":"Deut 1-3"},
@@ -376,24 +402,19 @@ const todayEntry = plan.find(x => x.d === todayStr);
 let curMonth = new Date().getMonth();
 let curYear = new Date().getFullYear();
 
-function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(done)); } catch(e) {}
-}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(done)); } catch(e) {} }
 
 function toggle(dateStr) {
   if (done[dateStr]) delete done[dateStr]; else done[dateStr] = true;
   save(); render();
 }
-
 function toggleToday() { if (todayEntry) toggle(todayEntry.d); }
 
 function streak() {
-  let s = 0;
-  let d = new Date(todayStr);
+  let s = 0, d = new Date(todayStr);
   while (true) {
     const ds = d.toISOString().slice(0,10);
-    if (done[ds]) { s++; d.setDate(d.getDate()-1); }
-    else break;
+    if (done[ds]) { s++; d.setDate(d.getDate()-1); } else break;
   }
   return s;
 }
@@ -403,18 +424,104 @@ function fmtDate(ds) {
   return d.getDate() + ' de ' + MONTHS[d.getMonth()];
 }
 
+// ── TEXTO DIÁRIO ──────────────────────────────────────────────────
+async function loadDailyText() {
+  const body = document.getElementById('daily-body');
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  const jwUrl = `https://wol.jw.org/pt/wol/h/r5/lp-t/${y}/${m}/${day}`;
+  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(jwUrl)}`;
+
+  try {
+    const res = await fetch(proxyUrl);
+    if (!res.ok) throw new Error('proxy error');
+    const data = await res.json();
+    const html = data.contents;
+
+    // Parse the HTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+
+    // Get date heading
+    const h2 = doc.querySelector('h2');
+    const dateText = h2 ? h2.textContent.trim() : '';
+
+    // Get first paragraph (verse in italic)
+    const paras = doc.querySelectorAll('p');
+    let verse = '';
+    let mainText = '';
+    let found = false;
+
+    paras.forEach(p => {
+      const txt = p.textContent.trim();
+      if (!found && txt.length > 20) {
+        if (!verse && p.querySelector('em, i')) {
+          verse = txt;
+        } else if (verse && !mainText && txt.length > 50) {
+          mainText = txt;
+          found = true;
+        } else if (!verse && txt.length > 50) {
+          verse = txt;
+        }
+      }
+    });
+
+    // Fallback: grab first two meaningful paragraphs
+    if (!mainText) {
+      let count = 0;
+      paras.forEach(p => {
+        const txt = p.textContent.trim();
+        if (txt.length > 40 && count < 2) {
+          if (count === 0) verse = txt;
+          else mainText = txt;
+          count++;
+        }
+      });
+    }
+
+    if (!verse && !mainText) throw new Error('no content');
+
+    let expanded = false;
+    body.innerHTML = `
+      ${dateText ? `<div class="daily-date-lbl">${dateText}</div>` : ''}
+      ${verse ? `<div class="daily-verse">${verse}</div>` : ''}
+      ${mainText ? `<div class="daily-text" id="daily-txt">${mainText}</div>
+      <button class="daily-toggle" id="daily-toggle-btn" onclick="toggleDailyText()">Ler mais ▾</button>` : ''}
+    `;
+  } catch(e) {
+    body.innerHTML = `
+      <div class="daily-error">
+        Não foi possível carregar o texto do dia.<br>
+        <a href="https://wol.jw.org/pt/wol/h/r5/lp-t" target="_blank">Abrir no site ↗</a>
+      </div>`;
+  }
+}
+
+function toggleDailyText() {
+  const txt = document.getElementById('daily-txt');
+  const btn = document.getElementById('daily-toggle-btn');
+  if (!txt) return;
+  if (txt.classList.contains('expanded')) {
+    txt.classList.remove('expanded');
+    btn.textContent = 'Ler mais ▾';
+  } else {
+    txt.classList.add('expanded');
+    btn.textContent = 'Ler menos ▴';
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────────────────
 function render() {
   const total = plan.length;
   const cnt = Object.keys(done).length;
   const pct = Math.round(cnt / total * 100);
 
-  document.getElementById('s-lidas').textContent = cnt;
-  document.getElementById('s-streak').textContent = streak();
   document.getElementById('prog-fill').style.width = pct + '%';
   document.getElementById('prog-done-lbl').textContent = cnt + ' lidas';
   document.getElementById('prog-pct').textContent = pct + '%';
 
-  // Today card
   const area = document.getElementById('today-area');
   if (todayEntry) {
     const d = new Date(todayEntry.d + 'T00:00:00');
@@ -523,6 +630,7 @@ document.getElementById('btn-next').addEventListener('click', () => {
 });
 
 render();
+loadDailyText();
 </script>
 </body>
 </html>
