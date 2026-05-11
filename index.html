@@ -431,61 +431,46 @@ async function loadDailyText() {
   const y = d.getFullYear();
   const m = d.getMonth() + 1;
   const day = d.getDate();
-  const jwUrl = `https://wol.jw.org/pt/wol/h/r5/lp-t/${y}/${m}/${day}`;
-  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(jwUrl)}`;
 
   try {
-    const res = await fetch(proxyUrl);
-    if (!res.ok) throw new Error('proxy error');
+    const res = await fetch(`/api/daily?year=${y}&month=${m}&day=${day}`);
+    if (!res.ok) throw new Error('api error');
     const data = await res.json();
-    const html = data.contents;
 
-    // Parse the HTML
+    // The JW API returns items array with HTML content
+    const item = data.items && data.items[0];
+    if (!item || !item.content) throw new Error('no content');
+
+    const html = item.content;
+
+    // Parse HTML to extract verse and text
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
-    // Get date heading
-    const h2 = doc.querySelector('h2');
-    const dateText = h2 ? h2.textContent.trim() : '';
-
-    // Get first paragraph (verse in italic)
-    const paras = doc.querySelectorAll('p');
+    // First <em> or <p> with italic = verse reference
     let verse = '';
     let mainText = '';
-    let found = false;
 
-    paras.forEach(p => {
+    const allP = doc.querySelectorAll('p');
+    allP.forEach((p, i) => {
       const txt = p.textContent.trim();
-      if (!found && txt.length > 20) {
-        if (!verse && p.querySelector('em, i')) {
-          verse = txt;
-        } else if (verse && !mainText && txt.length > 50) {
-          mainText = txt;
-          found = true;
-        } else if (!verse && txt.length > 50) {
-          verse = txt;
-        }
+      if (!txt) return;
+      if (i === 0 || p.querySelector('em')) {
+        if (!verse) verse = txt;
+      } else if (!mainText && txt.length > 30) {
+        mainText = txt;
       }
     });
 
-    // Fallback: grab first two meaningful paragraphs
-    if (!mainText) {
-      let count = 0;
-      paras.forEach(p => {
-        const txt = p.textContent.trim();
-        if (txt.length > 40 && count < 2) {
-          if (count === 0) verse = txt;
-          else mainText = txt;
-          count++;
-        }
-      });
+    // Fallback
+    if (!verse && !mainText) {
+      // Strip all tags and split
+      const plain = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+      verse = plain.substring(0, 120) + '...';
+      mainText = plain.substring(120, 500) + '...';
     }
 
-    if (!verse && !mainText) throw new Error('no content');
-
-    let expanded = false;
     body.innerHTML = `
-      ${dateText ? `<div class="daily-date-lbl">${dateText}</div>` : ''}
       ${verse ? `<div class="daily-verse">${verse}</div>` : ''}
       ${mainText ? `<div class="daily-text" id="daily-txt">${mainText}</div>
       <button class="daily-toggle" id="daily-toggle-btn" onclick="toggleDailyText()">Ler mais ▾</button>` : ''}
