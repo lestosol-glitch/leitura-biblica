@@ -479,9 +479,8 @@ async function loadDailyText() {
       ${dateText ? `<div class="daily-date-lbl">${dateText}</div>` : ''}
       ${verseHtml ? `<div class="daily-verse">${verseHtml}</div>` : ''}
       ${commentaryHtml ? `
-        <div class="daily-text" id="daily-txt">${commentaryHtml}</div>
-        <button class="daily-toggle" id="daily-toggle-btn" onclick="toggleDailyText()">Ler mais ▾</button>
-      ` : ''}
+    <div class="daily-text-full" id="daily-txt">${commentaryHtml}</div>
+` : ''}
     `;
   } catch(e) {
     body.innerHTML = `
