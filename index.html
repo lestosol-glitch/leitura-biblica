@@ -437,43 +437,51 @@ async function loadDailyText() {
     if (!res.ok) throw new Error('api error');
     const data = await res.json();
 
-    // The JW API returns items array with HTML content
+    // JW API: items array, each item has .content (HTML string)
     const item = data.items && data.items[0];
     if (!item || !item.content) throw new Error('no content');
 
-    const html = item.content;
-
-    // Parse HTML to extract verse and text
     const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
+    const doc = parser.parseFromString(item.content, 'text/html');
 
-    // First <em> or <p> with italic = verse reference
-    let verse = '';
-    let mainText = '';
+    // Date heading
+    const heading = doc.querySelector('h2, h3');
+    const dateText = heading ? heading.textContent.trim() : '';
 
-    const allP = doc.querySelectorAll('p');
-    allP.forEach((p, i) => {
-      const txt = p.textContent.trim();
-      if (!txt) return;
-      if (i === 0 || p.querySelector('em')) {
-        if (!verse) verse = txt;
-      } else if (!mainText && txt.length > 30) {
-        mainText = txt;
-      }
-    });
-
-    // Fallback
-    if (!verse && !mainText) {
-      // Strip all tags and split
-      const plain = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-      verse = plain.substring(0, 120) + '...';
-      mainText = plain.substring(120, 500) + '...';
+    // Verse: first <p> with <em> (themeScrp)
+    let verseHtml = '';
+    const themeScrp = doc.querySelector('.themeScrp, blockquote p, p em');
+    if (themeScrp) {
+      const p = themeScrp.closest('p') || themeScrp.parentElement;
+      verseHtml = p ? p.innerHTML : themeScrp.innerHTML;
     }
 
+    // Commentary: all <p> inside .bodyTxt or all remaining <p> after verse
+    let commentaryHtml = '';
+    const bodyTxt = doc.querySelector('.bodyTxt, .text-commentary');
+    if (bodyTxt) {
+      commentaryHtml = bodyTxt.innerHTML;
+    } else {
+      // fallback: grab all p tags except the first (verse)
+      const allP = doc.querySelectorAll('p');
+      const parts = [];
+      allP.forEach((p, i) => {
+        if (i > 0 && p.textContent.trim().length > 20) parts.push(p.innerHTML);
+      });
+      commentaryHtml = parts.join('<br><br>');
+    }
+
+    // Clean up links (remove hrefs that won't work)
+    commentaryHtml = commentaryHtml.replace(/href="[^"]*"/g, 'href="#"');
+    verseHtml = verseHtml.replace(/href="[^"]*"/g, 'href="#"');
+
     body.innerHTML = `
-      ${verse ? `<div class="daily-verse">${verse}</div>` : ''}
-      ${mainText ? `<div class="daily-text" id="daily-txt">${mainText}</div>
-      <button class="daily-toggle" id="daily-toggle-btn" onclick="toggleDailyText()">Ler mais ▾</button>` : ''}
+      ${dateText ? `<div class="daily-date-lbl">${dateText}</div>` : ''}
+      ${verseHtml ? `<div class="daily-verse">${verseHtml}</div>` : ''}
+      ${commentaryHtml ? `
+        <div class="daily-text" id="daily-txt">${commentaryHtml}</div>
+        <button class="daily-toggle" id="daily-toggle-btn" onclick="toggleDailyText()">Ler mais ▾</button>
+      ` : ''}
     `;
   } catch(e) {
     body.innerHTML = `
